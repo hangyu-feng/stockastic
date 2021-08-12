@@ -1,47 +1,50 @@
 from sklearn import preprocessing
 import numpy as np
 
-HISTORY_POINTS = 50
-
-def preprocess(data):
+def preprocess(raw):
     """ drop the oldest data point and drop the date column"""
-    data = data.drop('date', axis=1)
+    data = raw.drop('date', axis=1)
     data = data.drop(0, axis=0)
     return data.values
 
 def normalize(data):
     return preprocessing.MinMaxScaler().fit_transform(data)
 
-def calc_ema(values, time_period):
-    # https://www.investopedia.com/ask/answers/122314/what-exponential-moving-average-ema-formula-and-how-ema-calculated.asp
-    sma = np.mean(values[:,3])
-    ema_values = [sma]
-    k = 2 / (1 + time_period)
-    for i in range(len(his) - time_period, len(his)):
-        close = his[i][3]
-        ema_values.append(close * k + ema_values[-1] * (1 - k))
-    return ema_values[-1]
+def sma(values):
+    """ simple moving average """
+    return np.mean(values)
 
-def process(data, size):
-    """ohlcv means open, high, low, close, volume
-    data: raw data, without preprocess and normalize
+def ema(values, k=None):
+    """ expoential moving average:
+    k = 2 / (len(values) + 1), can actually set to other numbers
+    ema[i] = closing_price[i] * k + ema[i-1] * (1-k)
+    can be calculated as weighted sum:
+        sum((1-k)**i * v[i]) / sum((1-k)**i), where i = 0...(N-1), v[0] is today's value
+
+    https://en.wikipedia.org/wiki/Moving_average
     """
-    data = preprocess(data)
+    N = len(values)
+    if k is None: k = 2 / (N+1)
+    weights = np.power(1-k, range(N))
+    return weights.dot(values) / np.sum(weights)
 
-    data_normal = normalize(data)
-    ohlcv_normal = np.array(data_normal[i:i+size] for i in range(len(data_normal) - size))
-    next_day_open_normal = np.array(data_normal[:,0][i + size] for i in range(len(data_normal) - size))
-    next_day_open_normal = np.expand_dims(next_day_open_normal, -1)
+def calc_ohlcv(normal, window_size):
+    """ normalized open, high, low, close, volume data """
+    return np.array([normal[i:i+window_size] for i in range(len(normal)-window_size)])
 
-    next_day_open = np.array(data[:,0][i + size] for i in range(len(data) - size))
-    next_day_open = np.expand_dims(next_day_open, -1)
+def calc_indicators(ohlcv):
+    return normalize(np.array([sma(window) for window in ohlcv]))
 
-    y_normaliser = preprocessing.MinMaxScaler()
-    y_normaliser.fit(np.expand_dims( next_day_open ))
-    # TODO: split into 4 functions
+def calc_open(data, window_size):
+    next_open = np.array([data[:,0][i+window_size] for i in range(len(data)-window_size)])
+    return np.expand_dims(next_open, -1)
 
-
-if __name__ == "__main__":
-    import pandas
-    data = pandas.read_csv("data/daily/AMD.csv")
-    pass
+def dataset(raw, window_size=50):
+    data = preprocess(raw)
+    normal = normalize(data)
+    ohlcv = calc_ohlcv(normal, window_size)
+    indicators = calc_indicators(ohlcv)
+    open_values = calc_open(data, window_size)
+    open_normal = calc_open(normal, window_size)
+    y_normalizer = preprocessing().MinMaxScaler().fit(open_values)
+    return ohlcv, indicators, open_normal, open_values, y_normalizer
