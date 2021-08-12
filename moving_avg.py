@@ -16,5 +16,5 @@ def ema(values, k=None):
     N = len(values)
     if k is None: k = 2 / (N+1)
     weights = np.power(1-k, range(N))
-    S = (1 - (1-k)**N) / k  # sum of power series
+    S = (1 - (1-k)**N) / k  # sum of weights
     return weights.dot(values) / S
