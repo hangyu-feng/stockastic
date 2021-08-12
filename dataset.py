@@ -33,3 +33,4 @@ def dataset(raw, window_size=50):
     y_normalizer = preprocessing().MinMaxScaler().fit(open_values)
 
     return ohlcv, indicators, open_normal, open_values, y_normalizer
+
