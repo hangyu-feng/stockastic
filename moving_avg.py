@@ -1,3 +1,5 @@
+import numpy as np
+
 def sma(values):
     """ simple moving average """
     return np.mean(values)
