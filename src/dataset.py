@@ -31,8 +31,8 @@ def raw_to_dataset(raw, window_size=WIN_SIZE):
 
     ohlcv = calc_ohlcv(normal, window_size)
     indicators = calc_indicators(ohlcv)
-    open_values = calc_open(data, window_size)
+    open_values = calc_open(data, window_size)  # open value of next day
     open_normal = calc_open(normal, window_size)
     y_normalizer = preprocessing().MinMaxScaler().fit(open_values)
 
-    return ohlcv, indicators, open_normal, open_values, y_normalizer
+    return ohlcv, indicators, open_normal, open_values, y_normalizer  # opens are next-day
