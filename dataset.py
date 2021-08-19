@@ -1,6 +1,8 @@
 from sklearn import preprocessing
-from .moving_avg import sma
 import numpy as np
+
+from moving_avg import sma
+from config import WIN_SIZE
 
 def preprocess(raw):
     """ drop the oldest data point and drop the date column"""
@@ -22,7 +24,7 @@ def calc_open(data, window_size):
     next_open = np.array([data[:,0][i+window_size] for i in range(len(data)-window_size)])
     return np.expand_dims(next_open, -1)
 
-def dataset(raw, window_size=50):
+def dataset(raw, window_size=WIN_SIZE):
     data = preprocess(raw)
     normal = normalize(data)
 
@@ -33,4 +35,3 @@ def dataset(raw, window_size=50):
     y_normalizer = preprocessing().MinMaxScaler().fit(open_values)
 
     return ohlcv, indicators, open_normal, open_values, y_normalizer
-
