@@ -1,5 +1,7 @@
-WIN_SIZE = 50
+CREDENTIALS_PATH = "../credentials.json"
+DATA_PATH = "../data"
 
+WIN_SIZE = 50
 MODEL_DEFAULT = {
     'lstm_units': 50,
     'drop_rate': 0.2,

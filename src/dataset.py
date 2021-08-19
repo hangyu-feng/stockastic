@@ -24,7 +24,8 @@ def calc_open(data, window_size):
     next_open = np.array([data[:,0][i+window_size] for i in range(len(data)-window_size)])
     return np.expand_dims(next_open, -1)
 
-def dataset(raw, window_size=WIN_SIZE):
+def raw_to_dataset(raw, window_size=WIN_SIZE):
+    """ raw to dataset """
     data = preprocess(raw)
     normal = normalize(data)
 
