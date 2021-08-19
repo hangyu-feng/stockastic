@@ -16,7 +16,7 @@ def default_args(defaults):
     return wrapper
 
 @default_args(MODEL_DEFAULT)
-def generate_model(lstm_units, drop_rate, dense_units, lr, adam_loss, window_size):
+def generate_model(lstm_units, drop_rate, dense_units, lr, adam_loss, window_size) -> Model:
     " return a keras model. see https://keras.io/api/models/model_training_apis/ "
     lstm_input = Input(shape=(window_size, 5), name='lstm_input')
     x = LSTM(lstm_units, name='lstm_0')(lstm_input)

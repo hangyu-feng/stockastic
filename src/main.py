@@ -27,3 +27,5 @@ if __name__ == "__main__":
     unscaled_y_test = open_values[n:]
 
     model.fit(x=x_train, y=y_train, **FITTING_PARAMS)
+    evaluation = model.evaluate(x_test, y_test)
+    print(evaluation)
