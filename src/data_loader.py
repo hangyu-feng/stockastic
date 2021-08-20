@@ -7,6 +7,7 @@ from config import DATA_PATH, CREDENTIALS_PATH
 
 
 class DataLoader:
+    """ deal with api and file reading/saving """
 
     def __init__(self, apikey=None) -> None:
         self.apikey = apikey if apikey else self.load_apikey()
