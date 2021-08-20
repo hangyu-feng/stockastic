@@ -1,5 +1,3 @@
-from src.main import TRAIN_SPLIT
-import pandas
 from os.path import dirname
 
 # paths
@@ -8,10 +6,9 @@ CREDENTIALS_PATH = f"{ROOT_PATH}/credentials.json"
 DATA_PATH = f"{ROOT_PATH}/data"
 MEGA_COMPANIES_PATH = f"{ROOT_PATH}/data/meta/nasdaq_screener_1629404898388(200B+).csv"
 LARGE_COMPANIES_PATH = f"{ROOT_PATH}/data/meta/nasdaq_screener_1629404871627(10B+).csv"
+MODEL_PATH = f"{ROOT_PATH}/data/models"
 
 # companies
-# MEGA_COMPANIES = list(pandas.read_csv(MEGA_COMPANIES_PATH)['Symbol'])
-# LARGE_COMPANIES = list(pandas.read_csv(LARGE_COMPANIES_PATH)['Symbol'])
 SELECTED_COMPANIES = ['AMD', 'IBM', 'MSFT', 'PCG', 'WMT']
 
 # model compiling

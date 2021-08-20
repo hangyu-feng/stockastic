@@ -1,7 +1,7 @@
 from functools import wraps
-from keras.models import Model
-from keras.layers import Dense, Dropout, LSTM, Input, Activation
-from keras import optimizers
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Dense, Dropout, LSTM, Input, Activation
+from tensorflow.keras import optimizers
 
 from config import MODEL_DEFAULT
 
@@ -26,6 +26,6 @@ def generate_model(lstm_units, drop_rate, dense_units, lr, adam_loss, window_siz
     x = Dense(dense_units[1], name='dense_1')(x)
     output = Activation('linear', name='linear_output')(x)
     mdl = Model(inputs=lstm_input, outputs=output)
-    adam = optimizers.Adam(lr=lr)
+    adam = optimizers.Adam(learning_rate=lr)
     mdl.compile(optimizer=adam, loss=adam_loss)
     return mdl
