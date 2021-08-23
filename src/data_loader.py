@@ -1,10 +1,10 @@
 from alpha_vantage.timeseries import TimeSeries
 import json
 import pandas
+import numpy as np
 
 from dataset import raw_to_dataset, simple_dataset
 from config import DATA_PATH, CREDENTIALS_PATH
-
 
 class DataLoader:
     """ deal with api and file reading/saving """
@@ -32,17 +32,17 @@ class DataLoader:
         symbol: (str) stock symbol
         interval: (str) one of 'daily', 'weekly', 'monthly', '1min', '5min', '15min', '30min', '60min'
         """
-        return f"{DATA_PATH}/{catogory}/{interval}/{symbol}.csv"
+        return f"{DATA_PATH}/{catogory}/{interval}/{symbol}.pkl"
 
     def save_timeseries(self, symbol, interval):
-        """ pull data from alphavantage.co and save to csv file """
+        """ pull data from alphavantage.co and save to pickle file """
         get_timeseries = self.interval_to_method(interval)
         data, metadata = get_timeseries(symbol=symbol, outputsize='full')
-        data.to_csv(self.path('raw', symbol, interval))
+        data.to_pickle(self.path('raw', symbol, interval))
 
     def read_timeseries(self, symbol, interval):
-        """ read from saved csv file """
-        return pandas.read_csv(self.path('raw', symbol, interval))
+        """ read from saved pickle file """
+        return pandas.read_pickle(self.path('raw', symbol, interval))
 
     def get_raw(self, symbol, interval='daily', update=False):
         if update:
@@ -53,7 +53,10 @@ class DataLoader:
     def save_dataset(self, symbol, interval='daily', update=False):
         raw = self.get_raw(symbol, interval, update)
         data = simple_dataset(raw)
-        data.to_feather
+        np.save(self.path('datasets', symbol, interval), data)
+
+    def read_dataset(self, symbol, interval='daily'):
+        return np.load(self.path('datasets', symbol, interval))
 
     # ================== below are old methods ==================
 

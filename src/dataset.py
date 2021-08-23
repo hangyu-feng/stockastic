@@ -4,14 +4,15 @@ import numpy as np
 from moving_avg import sma
 from config import WIN_SIZE
 
-def preprocess(raw):
+def preprocess(raw, csv=False):
     """ drop the oldest data point and drop the date column"""
-    data = raw.drop('date', axis=1)
-    data = data.drop(0, axis=0)
-    return data.values
+    data = raw.drop(index=raw.index[-1], axis=0)  # remove first day
+    if csv:
+        data.drop('date', axis=1, inplace=True)  # remove date column
+    return data
 
 def normalize(data):
-    return preprocessing.MinMaxScaler().fit_transform(data.reshape(-1, 1))
+    return preprocessing.MinMaxScaler().fit_transform(data)
 
 def simple_dataset(raw):
     return normalize(preprocess(raw))
