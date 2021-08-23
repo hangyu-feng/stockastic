@@ -25,9 +25,8 @@ def generate_model(lstm_units, drop_rate, dense_units, lr, loss):
         LSTM(lstm_units, return_sequences=True),
         Dropout(drop_rate),
         Dense(dense_units[0], activation='sigmoid'),
-        Dense(dense_units[0], activation='relu'),
-        Dense(dense_units[1], activation='linear')
+        Dense(dense_units[1])
     ])
     adam = optimizers.Adam(learning_rate=lr)
-    lstm_model.compile(optimizer=adam, loss=loss, metrics=[metrics.MeanAbsoluteError()])
+    lstm_model.compile(optimizer=adam, loss=loss)
     return lstm_model

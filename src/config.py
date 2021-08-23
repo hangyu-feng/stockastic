@@ -24,7 +24,4 @@ MODEL_DEFAULT = {
 }
 
 # model training
-SPLIT_RATIO = [0.7, 0.15, 0.15]
-FITTING_PARAMS = {
-    'epochs': 50,
-}
+SPLIT_RATIO = [0.8, 0.1, 0.1]
