@@ -34,7 +34,7 @@ def raw_to_dataset(raw, window_size=WIN_SIZE):
     data = preprocess(raw)
     normal = normalize(data)
 
-    ds = timeseries_dataset_from_array(normal)
+    ds = timeseries_dataset_from_array(normal)  # TODO
 
     ohlcv = calc_ohlcv(normal, window_size)
     indicators = calc_indicators(ohlcv)
