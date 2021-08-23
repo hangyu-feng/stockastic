@@ -2,7 +2,7 @@ from alpha_vantage.timeseries import TimeSeries
 import json
 import pandas
 
-from dataset import raw_to_dataset
+from dataset import raw_to_dataset, simple_dataset
 from config import DATA_PATH, CREDENTIALS_PATH
 
 
@@ -26,28 +26,34 @@ class DataLoader:
         if interval in {'1min', '5min', '15min', '30min', '60min'}:
             return lambda *args, **kwargs: self.ts.get_intraday(*args, **kwargs, interval=interval),
 
-    def csv_path(self, symbol, interval):
+    def path(self, catogory, symbol, interval):
         """
+        catogory: one of "raw", "datasets"
         symbol: (str) stock symbol
         interval: (str) one of 'daily', 'weekly', 'monthly', '1min', '5min', '15min', '30min', '60min'
         """
-        return f"{DATA_PATH}/{interval}/{symbol}.csv"
+        return f"{DATA_PATH}/{catogory}/{interval}/{symbol}.csv"
 
     def save_timeseries(self, symbol, interval):
         """ pull data from alphavantage.co and save to csv file """
         get_timeseries = self.interval_to_method(interval)
         data, metadata = get_timeseries(symbol=symbol, outputsize='full')
-        data.to_csv(self.csv_path(symbol, interval))
+        data.to_csv(self.path('raw', symbol, interval))
 
     def read_timeseries(self, symbol, interval):
         """ read from saved csv file """
-        return pandas.read_csv(self.csv_path(symbol, interval))
+        return pandas.read_csv(self.path('raw', symbol, interval))
 
     def get_raw(self, symbol, interval='daily', update=False):
         if update:
             self.save_timeseries(symbol, interval)
         # will throw error if file not found
         return self.read_timeseries(symbol, interval)
+
+    def save_dataset(self, symbol, interval='daily', update=False):
+        raw = self.get_raw(symbol, interval, update)
+        data = simple_dataset(raw)
+        data.to_feather
 
     # ================== below are old methods ==================
 

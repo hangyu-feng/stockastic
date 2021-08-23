@@ -13,6 +13,9 @@ def preprocess(raw):
 def normalize(data):
     return preprocessing.MinMaxScaler().fit_transform(data.reshape(-1, 1))
 
+def simple_dataset(raw):
+    return normalize(preprocess(raw))
+
 def calc_ohlcv(normal, window_size):
     """ normalized open, high, low, close, volume data """
     return np.array([normal[i:i+window_size] for i in range(len(normal)-window_size)])
