@@ -5,7 +5,7 @@ from tensorflow.keras.models import load_model
 
 if __name__ == "__main__":
 
-    NEW_MODEL = True
+    NEW_MODEL = False
 
     loader = DataLoader()
 

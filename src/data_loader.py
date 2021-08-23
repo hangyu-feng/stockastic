@@ -58,14 +58,6 @@ class DataLoader:
     def read_dataset(self, symbol, interval='daily'):
         return np.load(self.path('datasets', symbol, interval))
 
-    # ================== below are old methods ==================
-
-    def dataset_OLD(self, symbol, update=False):
-        """ grab data from api and return the processed dataset. If update is False, it will only return
-        saved data """
-        raw = self.get_raw(symbol, update=update)
-        return raw_to_dataset(raw)
-
 
 dl = DataLoader()
 pass

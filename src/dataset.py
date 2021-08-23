@@ -1,4 +1,5 @@
 from sklearn import preprocessing
+from tensorflow.keras.utils import timeseries_dataset_from_array
 import numpy as np
 
 from moving_avg import sma
@@ -6,7 +7,7 @@ from config import WIN_SIZE
 
 def preprocess(raw, csv=False):
     """ drop the oldest data point and drop the date column"""
-    data = raw.drop(index=raw.index[-1], axis=0)  # remove first day
+    data = raw[::-1].drop(index=raw.index[0], axis=0)  # reverse and remove first day
     if csv:
         data.drop('date', axis=1, inplace=True)  # remove date column
     return data
@@ -32,6 +33,8 @@ def raw_to_dataset(raw, window_size=WIN_SIZE):
     """ raw to dataset """
     data = preprocess(raw)
     normal = normalize(data)
+
+    ds = timeseries_dataset_from_array(normal)
 
     ohlcv = calc_ohlcv(normal, window_size)
     indicators = calc_indicators(ohlcv)
