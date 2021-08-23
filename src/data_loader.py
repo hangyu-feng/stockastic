@@ -1,8 +1,7 @@
 from alpha_vantage.timeseries import TimeSeries
 import json
-import pandas
-from tensorflow.data.experimental import save as tf_save
-import numpy as np
+from pandas import read_pickle
+from tensorflow.data.experimental import save as tf_save, load as tf_load
 
 from dataset import raw_to_dataset
 from config import DATA_PATH, CREDENTIALS_PATH
@@ -44,7 +43,7 @@ class DataLoader:
 
     def read_timeseries(self, symbol, interval):
         """ read from saved pickle file """
-        return pandas.read_pickle(self.path('raw', symbol, interval))
+        return read_pickle(self.path('raw', symbol, interval))
 
     def get_raw(self, symbol, interval='daily', update=False):
         if update:
@@ -58,4 +57,4 @@ class DataLoader:
         tf_save(ds, self.path('datasets', symbol, interval, filetype=""))
 
     def read_dataset(self, symbol, interval='daily'):
-        return np.load(self.path('datasets', symbol, interval))
+        return tf_load(self.path('datasets', symbol, interval, filetype=""))

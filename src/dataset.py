@@ -1,9 +1,6 @@
 from sklearn import preprocessing
 from tensorflow.keras.utils import timeseries_dataset_from_array
-import numpy as np
-
-from moving_avg import sma
-from config import WIN_SIZE
+from config import WIN_SIZE, BATCH_SIZE, SPLIT_RATIO
 
 def preprocess(raw, csv=False):
     """ drop the oldest data point and drop the date column"""
@@ -29,15 +26,25 @@ def normalize(data):
 #     next_open = np.array([data[:,0][i+window_size] for i in range(len(data)-window_size)])
 #     return np.expand_dims(next_open, -1)
 
-def raw_to_dataset(raw, window_size=WIN_SIZE):
+def raw_to_dataset(raw, window_size=WIN_SIZE, batch_size=BATCH_SIZE):
     """ raw to dataset """
-    data = preprocess(raw)
+    data = preprocess(raw)  # open, high, low, close, volume
     normal = normalize(data)
 
     ds = timeseries_dataset_from_array(
         data=normal[:-window_size],
-        targets=data[window_size:],
-        sequence_length=window_size
+        targets=data[data.columns[0]][window_size:],  # targets are open values
+        sequence_length=window_size,
+        batch_size=batch_size
     )
 
     return ds
+
+def split(dataset, ratio=SPLIT_RATIO):
+    assert sum(ratio) == 1 and all(i >= 0 for i in ratio)
+    train_size = int(ratio[0] * len(dataset))
+    val_size = int(ratio[1] * len(dataset))
+    train = dataset.take(train_size)
+    validation = dataset.skip(train_size).take(val_size)
+    test = dataset.skip(train_size + val_size)
+    return train, validation, test

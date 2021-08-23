@@ -13,20 +13,18 @@ SELECTED_COMPANIES = ['AMD', 'IBM', 'MSFT', 'PCG', 'WMT']
 
 # model compiling
 WIN_SIZE = 50
+BATCH_SIZE = 32
 MODEL_DEFAULT = {
     'lstm_units': 50,
     'drop_rate': 0.2,
     'dense_units': [64, 1],
     'lr': 0.0005,
-    'adam_loss': 'mse',
-    'window_size': WIN_SIZE
+    'loss': 'mse',
+    # 'window_size': WIN_SIZE
 }
 
 # model training
-TRAIN_SPLIT = 0.9
+SPLIT_RATIO = [0.7, 0.15, 0.15]
 FITTING_PARAMS = {
-    'batch_size': 32,
     'epochs': 50,
-    'shuffle': True,
-    'validation_split': 0.1
 }
