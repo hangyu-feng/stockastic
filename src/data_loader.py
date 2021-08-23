@@ -1,9 +1,10 @@
 from alpha_vantage.timeseries import TimeSeries
 import json
 import pandas
+from tensorflow.data.experimental import save as tf_save
 import numpy as np
 
-from dataset import raw_to_dataset, simple_dataset
+from dataset import raw_to_dataset
 from config import DATA_PATH, CREDENTIALS_PATH
 
 class DataLoader:
@@ -26,13 +27,14 @@ class DataLoader:
         if interval in {'1min', '5min', '15min', '30min', '60min'}:
             return lambda *args, **kwargs: self.ts.get_intraday(*args, **kwargs, interval=interval),
 
-    def path(self, catogory, symbol, interval):
+    def path(self, catogory, symbol, interval, filetype='pkl'):
         """
         catogory: one of "raw", "datasets"
         symbol: (str) stock symbol
         interval: (str) one of 'daily', 'weekly', 'monthly', '1min', '5min', '15min', '30min', '60min'
         """
-        return f"{DATA_PATH}/{catogory}/{interval}/{symbol}.pkl"
+        dot = '.' if filetype else ''
+        return f"{DATA_PATH}/{catogory}/{interval}/{symbol}{dot}{filetype}"
 
     def save_timeseries(self, symbol, interval):
         """ pull data from alphavantage.co and save to pickle file """
@@ -52,12 +54,8 @@ class DataLoader:
 
     def save_dataset(self, symbol, interval='daily', update=False):
         raw = self.get_raw(symbol, interval, update)
-        data = simple_dataset(raw)
-        np.save(self.path('datasets', symbol, interval), data)
+        ds = raw_to_dataset(raw)
+        tf_save(ds, self.path('datasets', symbol, interval, filetype=""))
 
     def read_dataset(self, symbol, interval='daily'):
         return np.load(self.path('datasets', symbol, interval))
-
-
-dl = DataLoader()
-pass

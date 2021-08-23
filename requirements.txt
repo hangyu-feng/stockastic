@@ -1,6 +1,6 @@
 pandas
-tensorflow
-numpy
+tensorflow == 2.6.0
+numpy == 1.19.2
 alpha_vantage
 matplotlib
 scikit-learn

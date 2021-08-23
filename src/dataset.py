@@ -15,31 +15,29 @@ def preprocess(raw, csv=False):
 def normalize(data):
     return preprocessing.MinMaxScaler().fit_transform(data)
 
-def simple_dataset(raw):
-    return normalize(preprocess(raw))
+# def simple_dataset(raw):
+#     return normalize(preprocess(raw))
 
-def calc_ohlcv(normal, window_size):
-    """ normalized open, high, low, close, volume data """
-    return np.array([normal[i:i+window_size] for i in range(len(normal)-window_size)])
+# def calc_ohlcv(normal, window_size):
+#     """ normalized open, high, low, close, volume data """
+#     return np.array([normal[i:i+window_size] for i in range(len(normal)-window_size)])
 
-def calc_indicators(ohlcv):
-    return normalize(np.array([sma(window) for window in ohlcv]))
+# def calc_indicators(ohlcv):
+#     return normalize(np.array([sma(window) for window in ohlcv]))
 
-def calc_open(data, window_size):
-    next_open = np.array([data[:,0][i+window_size] for i in range(len(data)-window_size)])
-    return np.expand_dims(next_open, -1)
+# def calc_open(data, window_size):
+#     next_open = np.array([data[:,0][i+window_size] for i in range(len(data)-window_size)])
+#     return np.expand_dims(next_open, -1)
 
 def raw_to_dataset(raw, window_size=WIN_SIZE):
     """ raw to dataset """
     data = preprocess(raw)
     normal = normalize(data)
 
-    ds = timeseries_dataset_from_array(normal)  # TODO
+    ds = timeseries_dataset_from_array(
+        data=normal[:-window_size],
+        targets=data[window_size:],
+        sequence_length=window_size
+    )
 
-    ohlcv = calc_ohlcv(normal, window_size)
-    indicators = calc_indicators(ohlcv)
-    open_values = calc_open(data, window_size)  # open value of next day
-    open_normal = calc_open(normal, window_size)
-    y_normalizer = preprocessing.MinMaxScaler().fit(open_values)
-
-    return ohlcv, indicators, open_normal, open_values, y_normalizer  # opens are next-day
+    return ds
