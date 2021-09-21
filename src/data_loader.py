@@ -1,9 +1,7 @@
 from alpha_vantage.timeseries import TimeSeries
 import json
-from pandas import read_pickle
-from tensorflow.data.experimental import save as tf_save, load as tf_load
+from pandas import read_csv
 
-from dataset import raw_to_dataset
 from config import DATA_PATH, CREDENTIALS_PATH
 
 class DataLoader:
@@ -24,9 +22,9 @@ class DataLoader:
         if interval in method_map:
             return method_map[interval]
         if interval in {'1min', '5min', '15min', '30min', '60min'}:
-            return lambda *args, **kwargs: self.ts.get_intraday(*args, **kwargs, interval=interval),
+            return lambda *args, **kwargs: self.ts.get_intraday(*args, **kwargs, interval=interval)
 
-    def path(self, catogory, symbol, interval, filetype='pkl'):
+    def path(self, catogory, symbol, interval, filetype='csv'):
         """
         catogory: one of "raw", "datasets"
         symbol: (str) stock symbol
@@ -39,22 +37,14 @@ class DataLoader:
         """ pull data from alphavantage.co and save to pickle file """
         get_timeseries = self.interval_to_method(interval)
         data, metadata = get_timeseries(symbol=symbol, outputsize='full')
-        data.to_pickle(self.path('raw', symbol, interval))
+        data.to_csv(self.path('raw', symbol, interval))
 
     def read_timeseries(self, symbol, interval):
         """ read from saved pickle file """
-        return read_pickle(self.path('raw', symbol, interval))
+        return read_csv(self.path('raw', symbol, interval))
 
     def get_raw(self, symbol, interval='daily', update=False):
         if update:
             self.save_timeseries(symbol, interval)
         # will throw error if file not found
         return self.read_timeseries(symbol, interval)
-
-    def save_dataset(self, symbol, interval='daily', update=False):
-        raw = self.get_raw(symbol, interval, update)
-        ds = raw_to_dataset(raw)
-        tf_save(ds, self.path('datasets', symbol, interval, filetype=""))
-
-    def read_dataset(self, symbol, interval='daily'):
-        return tf_load(self.path('datasets', symbol, interval, filetype=""))
