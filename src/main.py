@@ -2,7 +2,7 @@ from tensorflow.keras.models import load_model
 
 from data_loader import DataLoader
 from model import generate_model
-from config import MODEL_PATH, SELECTED_COMPANIES
+from config import MODEL_PATH, selected_companies
 from dataset import split, raw_to_dataset
 from plot import plot
 
@@ -10,11 +10,12 @@ from plot import plot
 if __name__ == "__main__":
 
     loader = DataLoader()
+    selected_companies = ['AMD', 'IBM', 'MSFT', 'PCG', 'WMT']
 
-    for comp in SELECTED_COMPANIES:
+    for comp in selected_companies:
         loader.save_timeseries(comp, 'daily')
 
-    # for comp in SELECTED_COMPANIES:
+    # for comp in selected_companies:
     #     loader.save_dataset(comp)
 
 

@@ -1,3 +1,6 @@
+# functions to process raw data into dataset
+
+
 from tensorflow.keras.utils import timeseries_dataset_from_array, normalize
 from config import WIN_SIZE, BATCH_SIZE, SPLIT_RATIO
 

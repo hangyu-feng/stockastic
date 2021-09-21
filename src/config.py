@@ -8,9 +8,6 @@ MEGA_COMPANIES_PATH = f"{ROOT_PATH}/data/meta/nasdaq_screener_1629404898388(200B
 LARGE_COMPANIES_PATH = f"{ROOT_PATH}/data/meta/nasdaq_screener_1629404871627(10B+).csv"
 MODEL_PATH = f"{ROOT_PATH}/data/models"
 
-# companies
-SELECTED_COMPANIES = ['AMD', 'IBM', 'MSFT', 'PCG', 'WMT']
-
 # model compiling
 WIN_SIZE = 50
 BATCH_SIZE = 32
