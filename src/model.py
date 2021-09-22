@@ -1,20 +1,10 @@
-from functools import wraps
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, LSTM
 from tensorflow import metrics
 from tensorflow.keras import optimizers
 
 from config import MODEL_DEFAULT
-
-def default_args(defaults):
-    """ return a decorator that takes a function as input """
-    def wrapper(func):
-        @wraps(func)  # just to show docstring of original function
-        def new_func(*args, **kwargs):
-            kwargs = defaults | kwargs
-            return func(*args, **kwargs)
-        return new_func
-    return wrapper
+from default_args import default_args
 
 @default_args(MODEL_DEFAULT)
 def generate_model(lstm_units, drop_rate, dense_units, lr, loss):
