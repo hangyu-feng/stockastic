@@ -7,7 +7,7 @@ from tensorflow.python.ops.gen_dataset_ops import window
 
 class Dataset:
 
-    def __init__(self, raw, csv=True, window_size=50) -> None:
+    def __init__(self, raw, csv=True, window_size=50, split_ratio=[0.8, 0.1, 0.1]) -> None:
         self.raw = raw
         self.window_size = window_size
         self.dataset_args = {
@@ -17,8 +17,9 @@ class Dataset:
             'shuffle': True,
             'batch_size': 32,
         }
-        # a tf.data.Dataset object
-        self.ds = self.raw_to_dataset(raw, csv=csv)
+        self.split_ratio = split_ratio
+        self.data, self.targets = self.data_targets(raw, csv)
+        self.train, self.validation, self.test = self.split()
 
     def preprocess(self, raw, csv):
         """ drop the oldest data point and drop the date column"""
@@ -28,28 +29,33 @@ class Dataset:
             data.drop('date', axis=1, inplace=True)  # remove date column
         return data
 
-    def raw_to_dataset(self, raw, csv):
+    def data_targets(self, raw, csv):
         """ raw to dataset """
         normal = self.preprocess(raw, csv=csv)  # open, high, low, close, volume
         normal = normalize(normal, axis=0, order=2)
-        window_size = self.dataset_args['window_size']
-        data = normal[:-window_size]  # the last window_size entries has no target
-        targets = normal[window_size:][normal.columns[0]]
+        data = normal[:-self.window_size]  # the last window_size entries has no target
+        targets = normal[self.window_size:][normal.columns[0]]
+        return data, targets
+
+    def to_dataset(self, start_index=0, end_index=-1):
+        if end_index == -1:
+            end_index = len(self.data) - 1
         ds = timeseries_dataset_from_array(
-            data=data,
-            targets=targets,
+            data=self.data,
+            targets=self.targets,
+            start_index=start_index,
+            end_index=end_index,
             **self.dataset_args
         )
         return ds
 
-    def split(self, dataset, ratio=SPLIT_RATIO):
+    def split(self):
         """ split dataset into train and test """
-        assert sum(ratio) == 1 and all(i >= 0 for i in ratio)
-        train_size = int(ratio[0] * len(dataset))
-        val_size = int(ratio[1] * len(dataset))
-        train = dataset.take(train_size)
-        validation = dataset.skip(train_size).take(val_size)
-        test = dataset.skip(train_size+val_size)
+        train_end = int(self.split_ratio[0] * len(self.data))
+        val_end = train_end + int(self.split_ratio[1] * len(self.data))
+        train = self.to_dataset(0, train_end)
+        validation = self.to_dataset(train_end+1, val_end)
+        test = self.to_dataset(val_end+1, -1)
         return train, validation, test
 
 

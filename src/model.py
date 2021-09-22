@@ -14,7 +14,7 @@ def generate_model(lstm_units, drop_rate, dense_units, lr, loss):
     lstm_model = Sequential([
         LSTM(lstm_units, return_sequences=True),
         Dropout(drop_rate),
-        Dense(dense_units[0], activation='sigmoid'),
+        Dense(dense_units[0], activation='relu'),
         Dense(dense_units[1])
     ])
     adam = optimizers.Adam(learning_rate=lr)

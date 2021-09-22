@@ -9,8 +9,6 @@ LARGE_COMPANIES_PATH = f"{ROOT_PATH}/data/meta/nasdaq_screener_1629404871627(10B
 MODEL_PATH = f"{ROOT_PATH}/data/models"
 
 # model compiling
-WIN_SIZE = 50
-BATCH_SIZE = 32
 MODEL_DEFAULT = {
     'lstm_units': 50,
     'drop_rate': 0.2,
@@ -19,6 +17,3 @@ MODEL_DEFAULT = {
     'loss': 'mse',
     # 'window_size': WIN_SIZE
 }
-
-# model training
-SPLIT_RATIO = [0.8, 0.1, 0.1]
