@@ -14,7 +14,7 @@ class Dataset:
             'sequence_length': window_size,
             'sequence_stride': 1,
             'sampling_rate': 1,
-            'shuffle': True,
+            'shuffle': False,
             'batch_size': 32,
         }
         self.split_ratio = split_ratio
