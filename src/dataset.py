@@ -24,41 +24,6 @@ class Dataset:
         normalized_df = normalize(self.df, std, span=100)
         self.normalized = split(normalized_df, split_ratio)  # {'train', 'validation', 'test'}
 
-        self.data, self.targets = self.data_targets(raw, csv)
-        self.train, self.validation, self.test = self.split(
-            split_ratio, self.data)
-
-    def data_targets(self, raw, csv):
-        """ raw to dataset """
-        normal = self.preprocess(
-            raw, csv=csv)  # open, high, low, close, volume
-        normal = normalize(normal, axis=0, order=2)
-        # the last window_size entries has no target
-        data = normal[:-self.window_size]
-        targets = normal[self.window_size:][normal.columns[0]]
-        return data, targets
-
-    def to_dataset(self, start_index=0, end_index=-1):
-        if end_index == -1:
-            end_index = len(self.data) - 1
-        ds = timeseries_dataset_from_array(
-            data=self.data,
-            targets=self.targets,
-            start_index=start_index,
-            end_index=end_index,
-            **self.dataset_args
-        )
-        return ds
-
-    def split(self, split_ratio, data):
-        """ split dataset into train and test """
-        train_end = int(split_ratio[0] * len(data))
-        val_end = train_end + int(split_ratio[1] * len(data))
-        train = self.to_dataset(0, train_end)
-        validation = self.to_dataset(train_end+1, val_end)
-        test = self.to_dataset(val_end+1, -1)
-        return train, validation, test
-
     def describe(self):
         return self.df.describe()
 
@@ -93,6 +58,9 @@ def normalize(df, std, com=None, span=None, halflife=None, alpha=None, min_perio
     ema = df.ewm(com, span, halflife, alpha, min_periods,
                  adjust, ignore_na, axis, times).mean()
     return (df - ema) / std
+
+def normalize_simple(df, mean, std):
+    return (df - mean) / std
 
 
 if __name__ == "__main__":
